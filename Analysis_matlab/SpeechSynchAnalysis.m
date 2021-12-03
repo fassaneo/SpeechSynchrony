@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Speach Synchrony Analysis %%%%%%
+%%%%% Speech Synchrony Analysis %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Analysis to the Speech synchrony Test as decribed in Lizcano et al. 2022.
+%%% Analysis for the data obtained with the Speech synchrony Test as decribed in Lizcano et al. 2022.
 %%% The script performs the following steps:
-%%% (1) Extracts the envelope of the produced speech signal and filter it around the stimulus syllabic rate.
-%%% (2) compute the plv between the produced and perceived filtered envelopes in windows of 5 second length with an overlap of 2 seconds
-%%% (3) average the plvs within each audio file (i.e. run1 and run2)
-%%% (4) control for consistency between runs
-%%% (5) give the probability of the participant of being a high or a low
+%%% (1) Extracts the envelope of the produced speech signal and filters it around the stimulus syllabic rate.
+%%% (2) Computes the plv between the produced and perceived filtered envelopes in windows of 5 second length with an overlap of 2 seconds.
+%%% (3) Averages the plvs within each audio file (i.e. run1 and run2)
+%%% (4) Controls for consistency between runs
+%%% (5) Gives the probability of the participant of being a high or a low
 %%% synchronizer.
 %%% M. Florencia Assaneo 2021 fassaneo@inb.unam.mx
 
@@ -18,8 +18,8 @@ subject_code='example';               % Name of the audio file with the recorded
 Test_Version='ImpFix';                % Version of the test used ImpFix for the Implicit Fixed or ExpAcc for the Explicit Accelerated
 
 addpath('ExtraScriptsData/')
-%%% Loads the envelope of the stimulus, its frequency,
-%%% and the fequency band to estimate the PLV.
+%%% Loads the envelope of the stimulus, its sampling frequency,
+%%% and the frequency band at which it was filteres. The PLV will be estimated in this band.
 load(['AudioStim/envelope_stimulus_' Test_Version '.mat']);
 envelope_heard_filt=envelope_filt;  % Envelope of the perceived signal filtered around the syllabic rate
 clear envelope envelope_filt;
@@ -38,7 +38,7 @@ for iRun=1:2
     %%% Estimates the spectrum of the envelope for visualization purposes.
     [f,pwr]=powerSpectr(envelope_speech,fs_new);
     
-    %%% STEP 2 & 3: Computes the plv between the produced and perceived filtered envelope
+    %%% STEP 2 & 3: Computes the plv between the produced and perceived filtered envelopes
     envelope_speech_filt=bandpass(envelope_speech,freqFilt,fs_new);
     [time, PLV]=PLVevol(envelope_speech_filt,envelope_heard_filt,5,2,fs_new);
     
@@ -52,7 +52,7 @@ for iRun=1:2
     subplot(2,3,(iRun-1)*3+3)
     plot(time, PLV, '.-');
     ylim([0 1])
-    ylabel('Speech synchoprny (PLV)')
+    ylabel('Speech synchrony (PLV)')
     xlabel('Time (Sec)')
     title(['Mean PLV: ' num2str(plvs(iRun),'%.2f')], 'FontSize', 12);
     
@@ -62,7 +62,7 @@ for iRun=1:2
     plot(f, pwr);
     ylabel('Power')
     xlabel('Frequency (Hz)')
-    title(['Run ' num2str(iRun) ': Produced envelope spectrum'], 'FontSize', 12)
+    title(['Run ' num2str(iRun) ': Spectrum of the produced envelope'], 'FontSize', 12)
     
     %%% Acoustic signal of the produced speech with the envelope
     %%% overimposed in red
@@ -85,7 +85,7 @@ set(gcf, 'Position', windowSize)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 flagExclude=0;
 
-%%% Both PLVs should be within the normal range above 0.1 and below 0.9
+%%% Both PLVs should be within the normal range: above 0.1 and below 0.9
 if find(plvs>0.9)
     errordlg(['The plv of Run ' num2str(find(plvs>0.9)) ' is too high.'],'Error')
     flagExclude=1;
@@ -107,7 +107,7 @@ if abs(plvs(2)-adjusted_PLV)>abs(adjusted_PLV-PLV_bounds(side))
 end
 
 %%% STEP 5: If non of the exclusion criteria is reached the probability of
-%%% being High (1- prob of Low) is computed.
+%%% being a High synchronizer (1- prob of Low) is computed.
 if flagExclude==0
     load('Gaussian_Mixture_Fits.mat')
     eval(['gm=gm_' Test_Version]);
