@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Speach Synchrony Test %%%%%%
+%%%%% Speech Synchrony Test %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Runs the Speech Synchrony Test decribed in Lizcano et al. 2022.
 %%% The researcher should state which version of the test wants to be
